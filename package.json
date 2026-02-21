@@ -1,5 +1,5 @@
 {
-  "name": "openclaw-tool-guard",
+  "name": "tool-guard",
   "version": "1.0.0",
   "description": "OpenClaw plugin that prevents malformed tool call loops with dedup detection, hard caps, and model attribution logging",
   "main": "dist/index.js",
