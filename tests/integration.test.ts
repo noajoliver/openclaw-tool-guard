@@ -61,7 +61,7 @@ describe("plugin entry point", () => {
   it("register function accepts an api object without throwing", async () => {
     const mod = await import("../index.js");
     const api = {
-      config: { plugins: { entries: {} } },
+      pluginConfig: {},
       registerHook: (_name: string, _handler: Function) => {},
       on: (_name: string, _handler: Function) => {},
     };
@@ -72,7 +72,7 @@ describe("plugin entry point", () => {
     const mod = await import("../index.js");
     const hooks: Record<string, Function> = {};
     const api = {
-      config: { plugins: { entries: {} } },
+      pluginConfig: {},
       registerHook: (name: string, handler: Function) => { hooks[name] = handler; },
       on: (name: string, handler: Function) => { hooks[name] = handler; },
     };
@@ -85,7 +85,7 @@ describe("plugin entry point", () => {
     const mod = await import("../index.js");
     const hooks: Record<string, Function> = {};
     const api = {
-      config: { plugins: { entries: { "tool-guard": { config: { logPath: join(tmpdir(), `tg-test-${Date.now()}.log`) } } } } },
+      pluginConfig: { logPath: join(tmpdir(), `tg-test-${Date.now()}.log`) },
       registerHook: (name: string, handler: Function) => { hooks[name] = handler; },
       on: (name: string, handler: Function) => { hooks[name] = handler; },
     };
@@ -109,7 +109,7 @@ describe("plugin entry point", () => {
     const mod = await import("../index.js");
     const hooks: Record<string, Function> = {};
     const api = {
-      config: { plugins: { entries: { "tool-guard": { config: { logPath: join(tmpdir(), `tg-loop-${Date.now()}.log`) } } } } },
+      pluginConfig: { logPath: join(tmpdir(), `tg-loop-${Date.now()}.log`) },
       registerHook: (name: string, handler: Function) => { hooks[name] = handler; },
       on: (name: string, handler: Function) => { hooks[name] = handler; },
     };
@@ -136,7 +136,7 @@ describe("plugin entry point", () => {
     const mod = await import("../index.js");
     const hooks: Record<string, Function> = {};
     const api = {
-      config: { plugins: { entries: { "tool-guard": { config: { logPath: join(tmpdir(), `tg-cap-${Date.now()}.log`) } } } } },
+      pluginConfig: { logPath: join(tmpdir(), `tg-cap-${Date.now()}.log`) },
       registerHook: (name: string, handler: Function) => { hooks[name] = handler; },
       on: (name: string, handler: Function) => { hooks[name] = handler; },
     };
@@ -165,7 +165,7 @@ describe("plugin entry point", () => {
     const hooks: Record<string, Function> = {};
     const logPath = join(tmpdir(), `tg-attr-${Date.now()}.log`);
     const api = {
-      config: { plugins: { entries: { "tool-guard": { config: { logPath } } } } },
+      pluginConfig: { logPath },
       registerHook: (name: string, handler: Function) => { hooks[name] = handler; },
       on: (name: string, handler: Function) => { hooks[name] = handler; },
     };
@@ -190,7 +190,7 @@ describe("plugin entry point", () => {
     const mod = await import("../index.js");
     const hooks: Record<string, Function> = {};
     const api = {
-      config: { plugins: { entries: { "tool-guard": { config: { logPath: join(tmpdir(), `tg-ret-${Date.now()}.log`) } } } } },
+      pluginConfig: { logPath: join(tmpdir(), `tg-ret-${Date.now()}.log`) },
       registerHook: (name: string, handler: Function) => { hooks[name] = handler; },
       on: (name: string, handler: Function) => { hooks[name] = handler; },
     };
@@ -211,7 +211,7 @@ describe("plugin entry point", () => {
     const mod = await import("../index.js");
     const hooks: Record<string, Function> = {};
     const api = {
-      config: { plugins: { entries: {} } },
+      pluginConfig: {},
       registerHook: (name: string, handler: Function) => { hooks[name] = handler; },
       on: (name: string, handler: Function) => { hooks[name] = handler; },
     };
@@ -230,7 +230,7 @@ describe("plugin entry point", () => {
     const mod = await import("../index.js");
     const hooks: Record<string, Function> = {};
     const api = {
-      config: { plugins: { entries: { "tool-guard": { config: { enabled: false } } } } },
+      pluginConfig: { enabled: false },
       registerHook: (name: string, handler: Function) => { hooks[name] = handler; },
       on: (name: string, handler: Function) => { hooks[name] = handler; },
     };
