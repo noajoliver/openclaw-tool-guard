@@ -92,12 +92,14 @@ export default function register(api: PluginApi) {
       errorMessage: errorText,
     }).catch(() => {}); // Swallow logging errors
 
-    // For retryable errors, let the original message through unchanged
-    if (classification === "retryable") return;
-
-    // Build corrective message and check for loops
-    const corrective = buildCorrectiveMessage(toolName, {}, errorText);
+    // Track ALL errors for loop detection (even retryable ones can loop)
     const trackResult = tracker.recordFailure(toolName, {}, errorText, modelId);
+
+    // For retryable errors with no loop/cap, let the original message through
+    if (classification === "retryable" && trackResult.action === "continue") return;
+
+    // Build corrective message
+    const corrective = buildCorrectiveMessage(toolName, {}, errorText);
 
     let newContent: string;
     if (trackResult.action === "hard-cap") {
