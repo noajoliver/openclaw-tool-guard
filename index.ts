@@ -13,6 +13,11 @@ interface PluginApi {
     handler: (event: Record<string, unknown>, ctx: Record<string, unknown>) => unknown,
     opts?: { priority?: number; name?: string; description?: string },
   ): void;
+  on?(
+    hookName: string,
+    handler: (event: Record<string, unknown>, ctx: Record<string, unknown>) => unknown,
+    opts?: { priority?: number },
+  ): void;
 }
 
 interface ToolResultPersistEvent {
@@ -20,7 +25,7 @@ interface ToolResultPersistEvent {
   toolCallId?: string;
   message: {
     role: string;
-    content?: string | Array<{ type: string; tool_use_id?: string; content?: string | Array<{ type: string; text?: string }> }>;
+    content?: string | Array<{ type: string; tool_use_id?: string; text?: string; content?: string | Array<{ type: string; text?: string }> }>;
   };
   isSynthetic?: boolean;
 }
@@ -33,26 +38,43 @@ interface ToolResultPersistCtx {
 }
 
 export default function register(api: PluginApi) {
+
+  // Delayed check to see if hooks are visible after registration
   const config = (api.config?.plugins?.entries?.["tool-guard"]?.config ?? {}) as Record<string, unknown>;
   if (config.enabled === false) return;
 
   const tracker = new ToolGuardTracker(config as { maxIdenticalFailures?: number; maxFailuresPerTurn?: number });
   const logger = new ToolGuardLogger(config.logPath as string | undefined);
 
-  if (!api.registerHook) return;
+  if (!api.on) return;
 
   // Reset failure tracking at the start of each agent turn
-  api.registerHook("before_agent_start", () => {
+  // Use registerHook for visibility in `openclaw hooks list`
+  api.registerHook?.("before_agent_start", () => {
     tracker.resetTurn();
   }, { name: "tool-guard-reset", description: "Reset failure tracking at turn start" });
 
+  // Also register via api.on() which feeds into the typed hook runner
+  api.on("before_agent_start", () => {
+    tracker.resetTurn();
+  });
+
+  // Try before_tool_call and after_tool_call as diagnostic
+  api.on("before_tool_call", (event: Record<string, unknown>) => {
+  });
+
+  api.on("after_tool_call", (event: Record<string, unknown>) => {
+    const e = event as {toolName?: string; error?: string};
+  });
+
   // Intercept tool results before they're persisted to the session transcript.
-  // This lets us rewrite error messages to give the model better guidance.
-  api.registerHook("tool_result_persist", (event: Record<string, unknown>, ctx: Record<string, unknown>) => {
+  // api.on() is required — registerHook goes to file-based hooks, not typed hooks.
+  api.on("tool_result_persist", (event: Record<string, unknown>, ctx: Record<string, unknown>) => {
     const e = event as unknown as ToolResultPersistEvent;
     const c = ctx as unknown as ToolResultPersistCtx;
     const toolName = e.toolName ?? c.toolName ?? "";
     const toolCallId = e.toolCallId ?? c.toolCallId ?? "";
+
 
     // Extract error text from the message content
     const errorText = extractErrorFromMessage(e.message);
@@ -89,7 +111,10 @@ export default function register(api: PluginApi) {
     // Return a modified message with our enhanced error
     const modifiedMessage = rewriteMessageContent(e.message, newContent);
     return { message: modifiedMessage };
-  }, { name: "tool-guard-intercept", description: "Intercept and classify tool errors" });
+  });
+
+  // Register for hooks list visibility (display only — real handler is via api.on above)
+  api.registerHook?.("tool_result_persist_display", () => {}, { name: "tool-guard-intercept", description: "Intercept and classify tool errors" });
 }
 
 /**
@@ -109,11 +134,14 @@ function extractErrorFromMessage(message: ToolResultPersistEvent["message"]): st
   if (Array.isArray(message.content)) {
     for (const block of message.content) {
       if (block.type === "tool_result" || block.type === "text") {
-        const text = typeof block.content === "string"
-          ? block.content
-          : Array.isArray(block.content)
-            ? block.content.filter((c) => c.type === "text").map((c) => c.text).join("\n")
-            : "";
+        // OpenClaw uses block.text for text blocks, block.content for nested
+        const text = typeof block.text === "string"
+          ? block.text
+          : typeof block.content === "string"
+            ? block.content
+            : Array.isArray(block.content)
+              ? block.content.filter((c: {type: string; text?: string}) => c.type === "text").map((c: {text?: string}) => c.text).join("\n")
+              : "";
         if (text && isErrorContent(text)) return text;
       }
     }

@@ -63,6 +63,7 @@ describe("plugin entry point", () => {
     const api = {
       config: { plugins: { entries: {} } },
       registerHook: (_name: string, _handler: Function) => {},
+      on: (_name: string, _handler: Function) => {},
     };
     expect(() => mod.default(api)).not.toThrow();
   });
@@ -73,6 +74,7 @@ describe("plugin entry point", () => {
     const api = {
       config: { plugins: { entries: {} } },
       registerHook: (name: string, handler: Function) => { hooks[name] = handler; },
+      on: (name: string, handler: Function) => { hooks[name] = handler; },
     };
     mod.default(api);
     expect(hooks["tool_result_persist"]).toBeDefined();
@@ -85,6 +87,7 @@ describe("plugin entry point", () => {
     const api = {
       config: { plugins: { entries: { "tool-guard": { config: { logPath: join(tmpdir(), `tg-test-${Date.now()}.log`) } } } } },
       registerHook: (name: string, handler: Function) => { hooks[name] = handler; },
+      on: (name: string, handler: Function) => { hooks[name] = handler; },
     };
     mod.default(api);
     const event = {
@@ -108,6 +111,7 @@ describe("plugin entry point", () => {
     const api = {
       config: { plugins: { entries: { "tool-guard": { config: { logPath: join(tmpdir(), `tg-loop-${Date.now()}.log`) } } } } },
       registerHook: (name: string, handler: Function) => { hooks[name] = handler; },
+      on: (name: string, handler: Function) => { hooks[name] = handler; },
     };
     mod.default(api);
 
@@ -134,6 +138,7 @@ describe("plugin entry point", () => {
     const api = {
       config: { plugins: { entries: { "tool-guard": { config: { logPath: join(tmpdir(), `tg-cap-${Date.now()}.log`) } } } } },
       registerHook: (name: string, handler: Function) => { hooks[name] = handler; },
+      on: (name: string, handler: Function) => { hooks[name] = handler; },
     };
     mod.default(api);
 
@@ -162,6 +167,7 @@ describe("plugin entry point", () => {
     const api = {
       config: { plugins: { entries: { "tool-guard": { config: { logPath } } } } },
       registerHook: (name: string, handler: Function) => { hooks[name] = handler; },
+      on: (name: string, handler: Function) => { hooks[name] = handler; },
     };
     mod.default(api);
     const event = {
@@ -186,6 +192,7 @@ describe("plugin entry point", () => {
     const api = {
       config: { plugins: { entries: { "tool-guard": { config: { logPath: join(tmpdir(), `tg-ret-${Date.now()}.log`) } } } } },
       registerHook: (name: string, handler: Function) => { hooks[name] = handler; },
+      on: (name: string, handler: Function) => { hooks[name] = handler; },
     };
     mod.default(api);
     const event = {
@@ -206,6 +213,7 @@ describe("plugin entry point", () => {
     const api = {
       config: { plugins: { entries: {} } },
       registerHook: (name: string, handler: Function) => { hooks[name] = handler; },
+      on: (name: string, handler: Function) => { hooks[name] = handler; },
     };
     mod.default(api);
     const event = {
@@ -224,6 +232,7 @@ describe("plugin entry point", () => {
     const api = {
       config: { plugins: { entries: { "tool-guard": { config: { enabled: false } } } } },
       registerHook: (name: string, handler: Function) => { hooks[name] = handler; },
+      on: (name: string, handler: Function) => { hooks[name] = handler; },
     };
     mod.default(api);
     expect(hooks["tool_result_persist"]).toBeUndefined();
