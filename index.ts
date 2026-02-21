@@ -11,7 +11,7 @@ interface PluginApi {
   registerHook?(
     events: string | string[],
     handler: (event: Record<string, unknown>, ctx: Record<string, unknown>) => unknown,
-    opts?: { priority?: number },
+    opts?: { priority?: number; name?: string; description?: string },
   ): void;
 }
 
@@ -44,7 +44,7 @@ export default function register(api: PluginApi) {
   // Reset failure tracking at the start of each agent turn
   api.registerHook("before_agent_start", () => {
     tracker.resetTurn();
-  });
+  }, { name: "tool-guard-reset", description: "Reset failure tracking at turn start" });
 
   // Intercept tool results before they're persisted to the session transcript.
   // This lets us rewrite error messages to give the model better guidance.
@@ -89,7 +89,7 @@ export default function register(api: PluginApi) {
     // Return a modified message with our enhanced error
     const modifiedMessage = rewriteMessageContent(e.message, newContent);
     return { message: modifiedMessage };
-  });
+  }, { name: "tool-guard-intercept", description: "Intercept and classify tool errors" });
 }
 
 /**
