@@ -43,15 +43,26 @@ Logs which model generated each malformed tool call to `~/.openclaw/tool-guard.l
 
 ## Install
 
-```bash
-openclaw plugins install /path/to/openclaw-tool-guard
-```
-
-Or link for development:
+Link for development (recommended — changes are live on restart):
 
 ```bash
 openclaw plugins install -l /path/to/openclaw-tool-guard
 ```
+
+Or add manually to your `openclaw.json`:
+
+```json5
+{
+  plugins: {
+    load: { paths: ["/path/to/openclaw-tool-guard"] },
+    entries: {
+      "tool-guard": { enabled: true }
+    }
+  }
+}
+```
+
+Then restart the gateway.
 
 ## Configuration
 
@@ -104,6 +115,18 @@ Requires Node 22+.
 **Log file not created:** The log directory is created automatically. Check that the configured `logPath` is writable.
 
 **False positives:** If legitimate retries are being blocked, increase `maxIdenticalFailures`. Only deterministic validation errors (missing params, type mismatches) are treated as non-retryable — timeouts and network errors are always allowed to retry.
+
+## OpenClaw Plugin API Notes
+
+This plugin uses `api.on()` for runtime hook registration (typed hooks) and `api.registerHook()` for display in `openclaw hooks list`. Key hooks:
+
+- `before_agent_start` — resets failure counters each turn
+- `tool_result_persist` — intercepts tool results, classifies errors, injects corrective messages
+- `before_tool_call` / `after_tool_call` — available for diagnostics
+
+The `tool_result_persist` hook is **synchronous** — do not return Promises.
+
+Tested on OpenClaw 2026.2.6-3 with MiniMax M2.5 (Fireworks) and Claude Sonnet 4.6.
 
 ## License
 
