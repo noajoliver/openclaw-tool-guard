@@ -1,0 +1,36 @@
+{
+  "id": "tool-guard",
+  "name": "Tool Guard",
+  "description": "Prevents malformed tool call loops with dedup detection, hard caps, and model attribution logging",
+  "version": "1.0.0",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "maxIdenticalFailures": {
+        "type": "number",
+        "description": "Max identical tool call failures before loop break",
+        "default": 2
+      },
+      "maxFailuresPerTurn": {
+        "type": "number",
+        "description": "Max total tool failures per turn before hard stop",
+        "default": 5
+      },
+      "logPath": {
+        "type": "string",
+        "description": "Path for attribution log file (JSON lines)",
+        "default": "~/.openclaw/tool-guard.log"
+      },
+      "enabled": {
+        "type": "boolean",
+        "default": true
+      }
+    }
+  },
+  "uiHints": {
+    "maxIdenticalFailures": { "label": "Max Identical Failures", "placeholder": "2" },
+    "maxFailuresPerTurn": { "label": "Max Failures Per Turn", "placeholder": "5" },
+    "logPath": { "label": "Log File Path" }
+  }
+}

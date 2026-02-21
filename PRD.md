@@ -20,14 +20,32 @@ This affects any non-Anthropic model routed through OpenClaw's tool system. We o
 
 ## Solution: 3-Layer Defense
 
-### Layer A: Non-Retryable Error Tagging
+### Layer A: Corrective Error Messages
 
-When a tool call fails with a deterministic validation error (missing required param, type mismatch), append `[NON-RETRYABLE]` to the error message returned to the model. This gives the model a signal to try a different approach rather than retrying the same call.
+When a tool call fails with a deterministic validation error (missing required param, type mismatch), replace the generic error with a **corrective message** that tells the model:
+1. What went wrong
+2. What the correct call structure looks like
+3. What it actually sent
+
+Example — instead of:
+> `Missing required parameter: path (path or file_path)`
+
+Return:
+> `[TOOL ERROR] read() requires a 'path' parameter. Correct usage: read({ path: "path/to/file" }). You sent: read({}). Fix your call and retry.`
+
+This gives the model a chance to self-correct before the loop breaker kicks in.
 
 **Detection patterns:**
 - `Missing required parameter:`
 - `Expected .* but received`
 - `Missing parameters for`
+
+**Corrective templates (per tool):**
+- `read` → requires `path` (string)
+- `edit` → requires `path` (string), `oldText`/`old_string` (string), `newText`/`new_string` (string)
+- `write` → requires `path` (string), `content` (string)
+- `exec` → requires `command` (string)
+- Generic fallback for unknown tools with the error + "check required parameters"
 
 ### Layer B: Per-Turn Dedup Loop Breaker
 

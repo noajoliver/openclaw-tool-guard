@@ -1,0 +1,190 @@
+{
+  "testModules": [
+    {
+      "moduleId": "/home/noajoliver/projects/openclaw-tool-guard/tests/classifier.test.ts",
+      "tests": [
+        {
+          "name": "classifies 'Missing required parameter:' as non-retryable",
+          "fullName": "classifyError > classifies 'Missing required parameter:' as non-retryable",
+          "state": "passed"
+        },
+        {
+          "name": "classifies 'Missing parameters for' as non-retryable",
+          "fullName": "classifyError > classifies 'Missing parameters for' as non-retryable",
+          "state": "passed"
+        },
+        {
+          "name": "classifies 'Expected string but received undefined' as non-retryable",
+          "fullName": "classifyError > classifies 'Expected string but received undefined' as non-retryable",
+          "state": "passed"
+        },
+        {
+          "name": "classifies 'Missing required' as non-retryable",
+          "fullName": "classifyError > classifies 'Missing required' as non-retryable",
+          "state": "passed"
+        },
+        {
+          "name": "classifies 'type error' as non-retryable",
+          "fullName": "classifyError > classifies 'type error' as non-retryable",
+          "state": "passed"
+        },
+        {
+          "name": "classifies timeout errors as retryable",
+          "fullName": "classifyError > classifies timeout errors as retryable",
+          "state": "passed"
+        },
+        {
+          "name": "identifies Anthropic model from toolu_ prefix",
+          "fullName": "inferModelFromToolCallId > identifies Anthropic model from toolu_ prefix",
+          "state": "passed"
+        },
+        {
+          "name": "identifies Fireworks/OpenAI-compat model from call_ prefix",
+          "fullName": "inferModelFromToolCallId > identifies Fireworks/OpenAI-compat model from call_ prefix",
+          "state": "passed"
+        },
+        {
+          "name": "returns 'unknown' for unrecognized prefixes",
+          "fullName": "inferModelFromToolCallId > returns 'unknown' for unrecognized prefixes",
+          "state": "passed"
+        },
+        {
+          "name": "builds corrective message for read() with missing path",
+          "fullName": "buildCorrectiveMessage > builds corrective message for read() with missing path",
+          "state": "passed"
+        },
+        {
+          "name": "builds generic message for unknown tools",
+          "fullName": "buildCorrectiveMessage > builds generic message for unknown tools",
+          "state": "passed"
+        },
+        {
+          "name": "recognizes path alias file_path",
+          "fullName": "buildCorrectiveMessage > recognizes path alias file_path",
+          "state": "passed"
+        },
+        {
+          "name": "builds corrective message for edit() with missing params",
+          "fullName": "buildCorrectiveMessage > builds corrective message for edit() with missing params",
+          "state": "passed"
+        },
+        {
+          "name": "builds corrective message for write() showing only missing content",
+          "fullName": "buildCorrectiveMessage > builds corrective message for write() showing only missing content",
+          "state": "passed"
+        },
+        {
+          "name": "builds corrective message for exec() with missing command",
+          "fullName": "buildCorrectiveMessage > builds corrective message for exec() with missing command",
+          "state": "passed"
+        }
+      ]
+    },
+    {
+      "moduleId": "/home/noajoliver/projects/openclaw-tool-guard/tests/integration.test.ts",
+      "tests": [
+        {
+          "name": "writes a JSON line to the log file",
+          "fullName": "ToolGuardLogger > writes a JSON line to the log file",
+          "state": "passed"
+        },
+        {
+          "name": "expands ~ in default log path",
+          "fullName": "ToolGuardLogger > expands ~ in default log path",
+          "state": "passed"
+        },
+        {
+          "name": "Layer A corrects, Layer B breaks loop on identical calls",
+          "fullName": "end-to-end: 3-layer defense > Layer A corrects, Layer B breaks loop on identical calls",
+          "state": "passed"
+        },
+        {
+          "name": "exports a register function",
+          "fullName": "plugin entry point > exports a register function",
+          "state": "passed"
+        },
+        {
+          "name": "register function accepts an api object without throwing",
+          "fullName": "plugin entry point > register function accepts an api object without throwing",
+          "state": "passed"
+        },
+        {
+          "name": "registers tool_result_persist and before_agent_start hooks",
+          "fullName": "plugin entry point > registers tool_result_persist and before_agent_start hooks",
+          "state": "passed"
+        },
+        {
+          "name": "hook rewrites non-retryable error with corrective message",
+          "fullName": "plugin entry point > hook rewrites non-retryable error with corrective message",
+          "state": "passed"
+        },
+        {
+          "name": "hook triggers loop detection after 2 identical non-retryable failures",
+          "fullName": "plugin entry point > hook triggers loop detection after 2 identical non-retryable failures",
+          "state": "passed"
+        },
+        {
+          "name": "hook triggers hard cap after 5 total failures",
+          "fullName": "plugin entry point > hook triggers hard cap after 5 total failures",
+          "state": "passed"
+        },
+        {
+          "name": "hook logs failures with model attribution",
+          "fullName": "plugin entry point > hook logs failures with model attribution",
+          "state": "passed"
+        },
+        {
+          "name": "passes through retryable errors unchanged",
+          "fullName": "plugin entry point > passes through retryable errors unchanged",
+          "state": "passed"
+        },
+        {
+          "name": "passes through non-error results unchanged",
+          "fullName": "plugin entry point > passes through non-error results unchanged",
+          "state": "passed"
+        },
+        {
+          "name": "does not register hooks when enabled is false",
+          "fullName": "plugin entry point > does not register hooks when enabled is false",
+          "state": "passed"
+        }
+      ]
+    },
+    {
+      "moduleId": "/home/noajoliver/projects/openclaw-tool-guard/tests/tracker.test.ts",
+      "tests": [
+        {
+          "name": "returns 'continue' on first failure",
+          "fullName": "ToolGuardTracker > returns 'continue' on first failure",
+          "state": "passed"
+        },
+        {
+          "name": "detects loop after 2 identical failures",
+          "fullName": "ToolGuardTracker > detects loop after 2 identical failures",
+          "state": "passed"
+        },
+        {
+          "name": "triggers hard cap after 5 total failures",
+          "fullName": "ToolGuardTracker > triggers hard cap after 5 total failures",
+          "state": "passed"
+        },
+        {
+          "name": "resets failure counts between turns",
+          "fullName": "ToolGuardTracker > resets failure counts between turns",
+          "state": "passed"
+        },
+        {
+          "name": "respects custom maxIdenticalFailures config",
+          "fullName": "ToolGuardTracker > respects custom maxIdenticalFailures config",
+          "state": "passed"
+        },
+        {
+          "name": "does not count different tool/arg/error combos as identical",
+          "fullName": "ToolGuardTracker > does not count different tool/arg/error combos as identical",
+          "state": "passed"
+        }
+      ]
+    }
+  ],
+  "reason": "passed"
+}
