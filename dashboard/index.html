@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hive Queen Metrics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-icon">⬡</span>
+        <h1>Hive Queen Metrics</h1>
+      </div>
+      <nav class="nav">
+        <button class="nav-btn active" data-view="overview">Overview</button>
+        <button class="nav-btn" data-view="gateways">Gateways</button>
+        <button class="nav-btn" data-view="models">Models</button>
+        <button class="nav-btn" data-view="live">Live</button>
+      </nav>
+      <div class="controls">
+        <label for="range-select" class="range-label">Range</label>
+        <select id="range-select">
+          <option value="24h" selected>24h</option>
+          <option value="7d">7d</option>
+          <option value="30d">30d</option>
+        </select>
+        <div class="refresh-indicator">
+          <span class="refresh-dot"></span>
+          <span id="refresh-countdown" class="refresh-text">30s</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Overview View -->
+  <main class="main" id="view-overview">
+    <section class="cards">
+      <div class="card">
+        <div class="card-label">Events</div>
+        <div class="card-value" id="ov-events">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Total Tokens</div>
+        <div class="card-value" id="ov-tokens">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Input Tokens</div>
+        <div class="card-value" id="ov-input">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Output Tokens</div>
+        <div class="card-value" id="ov-output">—</div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-label">Est. Cost</div>
+        <div class="card-value" id="ov-cost">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Top Gateway</div>
+        <div class="card-value card-value--sm" id="ov-top-gw">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Top Model</div>
+        <div class="card-value card-value--sm" id="ov-top-model">—</div>
+      </div>
+    </section>
+
+    <section class="charts-row">
+      <div class="chart-card chart-card--wide">
+        <h2>Token Usage Over Time</h2>
+        <div class="chart-wrap"><canvas id="chart-tokens"></canvas></div>
+        <div class="empty-state" id="empty-tokens">Waiting for data…</div>
+      </div>
+      <div class="chart-card">
+        <h2>Model Distribution</h2>
+        <div class="chart-wrap"><canvas id="chart-models"></canvas></div>
+        <div class="empty-state" id="empty-models">Waiting for data…</div>
+      </div>
+    </section>
+
+    <section class="charts-row">
+      <div class="chart-card">
+        <h2>Cost Over Time</h2>
+        <div class="chart-wrap"><canvas id="chart-cost"></canvas></div>
+        <div class="empty-state" id="empty-cost">Waiting for data…</div>
+      </div>
+      <div class="chart-card">
+        <h2>Hourly Burn Rate</h2>
+        <div class="chart-wrap"><canvas id="chart-hourly"></canvas></div>
+        <div class="empty-state" id="empty-hourly">Waiting for data…</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Gateways View -->
+  <main class="main hidden" id="view-gateways">
+    <h2 class="section-title">Active Gateways (24h)</h2>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Gateway</th>
+            <th>Tokens (24h)</th>
+            <th>Cost (24h)</th>
+            <th>Top Model</th>
+          </tr>
+        </thead>
+        <tbody id="gw-tbody">
+          <tr><td colspan="4" class="empty-row">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Models View -->
+  <main class="main hidden" id="view-models">
+    <div class="models-layout">
+      <div>
+        <h2 class="section-title">Model Usage</h2>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Provider</th>
+                <th>Tokens</th>
+                <th>Cost</th>
+                <th>$/1K</th>
+              </tr>
+            </thead>
+            <tbody id="models-tbody">
+              <tr><td colspan="5" class="empty-row">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h2>Token Share by Model</h2>
+        <div class="chart-wrap"><canvas id="chart-models-dist"></canvas></div>
+        <div class="empty-state" id="empty-models-dist">Waiting for data…</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Live View -->
+  <main class="main hidden" id="view-live">
+    <div class="live-header">
+      <h2 class="section-title">Live Activity</h2>
+      <span class="live-badge">LIVE</span>
+    </div>
+    <div class="chart-card">
+      <h2>Tokens per Hour (Last 12h)</h2>
+      <div class="chart-wrap"><canvas id="chart-live"></canvas></div>
+      <div class="empty-state" id="empty-live">Waiting for data…</div>
+    </div>
+    <div class="cards" id="live-gw-cards"></div>
+  </main>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
