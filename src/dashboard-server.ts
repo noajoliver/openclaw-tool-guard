@@ -28,7 +28,7 @@ export class DashboardServer {
     private readonly db: MetricsDatabase,
     config: DashboardConfig = {},
   ) {
-    this.configPort = config.port ?? 8080;
+    this.configPort = config.port ?? 8082;
     this.bind = config.bind ?? "127.0.0.1";
 
     // Resolve dashboard static files relative to this compiled file:
@@ -46,42 +46,62 @@ export class DashboardServer {
   }
 
   start(): Promise<void> {
-    return new Promise((resolve) => {
-      this.server = createServer((req, res) => {
-        // CORS: allow localhost origins only
-        const origin = req.headers.origin ?? "";
-        if (origin && !/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
-          res.writeHead(403);
-          res.end("Forbidden");
-          return;
-        }
-        if (origin) {
-          res.setHeader("Access-Control-Allow-Origin", origin);
-          res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
-          res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-        }
-
-        if (req.method === "OPTIONS") {
-          res.writeHead(204);
-          res.end();
+    return new Promise((resolve, reject) => {
+      const tryPort = (port: number, attempt: number) => {
+        if (attempt > 10) {
+          reject(new Error(`Failed to bind after 10 attempts starting from ${this.configPort}`));
           return;
         }
 
-        const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`);
-        const path = url.pathname;
+        this.server = createServer((req, res) => {
+          // CORS: allow localhost origins only
+          const origin = req.headers.origin ?? "";
+          if (origin && !/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+            res.writeHead(403);
+            res.end("Forbidden");
+            return;
+          }
+          if (origin) {
+            res.setHeader("Access-Control-Allow-Origin", origin);
+            res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+            res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+          }
 
-        if (path.startsWith("/api/")) {
-          this.handleApi(path, url, res);
-          return;
-        }
+          if (req.method === "OPTIONS") {
+            res.writeHead(204);
+            res.end();
+            return;
+          }
 
-        this.serveStatic(path, res);
-      });
+          const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`);
+          const path = url.pathname;
 
-      this.server.listen(this.configPort, this.bind, () => {
-        console.log(`[metrics] Dashboard at http://${this.bind}:${this.actualPort}`);
-        resolve();
-      });
+          if (path.startsWith("/api/")) {
+            this.handleApi(path, url, res);
+            return;
+          }
+
+          this.serveStatic(path, res);
+        });
+
+        this.server.once('error', (err: NodeJS.ErrnoException) => {
+          if (err.code === 'EADDRINUSE') {
+            console.log(`[metrics] Port ${port} in use, trying ${port + 1}...`);
+            this.server?.close();
+            this.server = null;
+            tryPort(port + 1, attempt + 1);
+          } else {
+            reject(err);
+          }
+        });
+
+        this.server.listen(port, this.bind, () => {
+          console.log(`[metrics] Dashboard at http://${this.bind}:${this.actualPort}`);
+          resolve();
+        });
+      };
+
+      tryPort(this.configPort, 1);
     });
   }
 
