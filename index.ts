@@ -86,6 +86,7 @@ export default function register(api: any) {
 
   // ── Metrics ───────────────────────────────────────────────────────────────
   const metricsConfig = config.metrics ?? {};
+  console.log(`[metrics] Config: enabled=${metricsConfig.enabled}, hasRegisterService=${!!api.registerService}, hasOnDiagnostic=${!!api.onDiagnosticEvent}`);
   if (metricsConfig.enabled !== false && api.registerService) {
     const dbPath = expandPath(metricsConfig.dbPath ?? "~/.openclaw/metrics.db");
     const gatewayId =
@@ -120,7 +121,7 @@ export default function register(api: any) {
           const dashCfg = metricsConfig.dashboard ?? {};
           if (dashCfg.enabled !== false) {
             dashboard = new DashboardServer(db, {
-              port: dashCfg.port ?? 8080,
+              port: dashCfg.port ?? 8082,
               bind: dashCfg.bind ?? "127.0.0.1",
             });
             dashboard.start();
