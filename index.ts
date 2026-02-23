@@ -86,7 +86,6 @@ export default function register(api: any) {
 
   // ── Metrics ───────────────────────────────────────────────────────────────
   const metricsConfig = config.metrics ?? {};
-  console.log(`[metrics] Config: enabled=${metricsConfig.enabled}, hasRegisterService=${!!api.registerService}, hasOnDiagnostic=${!!api.onDiagnosticEvent}`);
   if (metricsConfig.enabled !== false && api.registerService) {
     const dbPath = expandPath(metricsConfig.dbPath ?? "~/.openclaw/metrics.db");
     const gatewayId =
@@ -116,6 +115,8 @@ export default function register(api: any) {
                 collector.record(event);
               }
             });
+          } else {
+            console.log("[metrics] Warning: onDiagnosticEvent not available. Token usage capture requires OpenClaw 2026.3+ or diagnostics-otel plugin enabled.");
           }
 
           const dashCfg = metricsConfig.dashboard ?? {};
