@@ -138,6 +138,23 @@ MIT
 
 The plugin includes a built-in token usage dashboard that captures `model.usage` events from all active gateways and stores them in a local SQLite database.
 
+### Prerequisites
+
+**OpenClaw 2026.2.22+** with diagnostics enabled:
+
+```json5
+{
+  diagnostics: {
+    enabled: true  // Required for model.usage events
+  },
+  plugins: {
+    entries: {
+      "tool-guard": { ... }
+    }
+  }
+}
+```
+
 ### Enabling
 
 Add to `openclaw.json` for each gateway you want to monitor:
@@ -188,6 +205,12 @@ Navigate to **http://127.0.0.1:8080** while any gateway is running.
 | Cost USD | Estimated cost per call |
 | Duration | API response time (ms) |
 | Channel | `discord`, `telegram`, etc. |
+
+### Port Conflicts
+
+If the configured port is in use, the dashboard automatically tries the next port:
+- 8080 → 8081 → 8082 → ... up to +10 attempts
+- Check logs for actual port: `[metrics] Dashboard at http://127.0.0.1:PORT`
 
 ### Data Retention
 
