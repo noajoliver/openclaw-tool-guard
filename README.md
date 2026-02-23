@@ -131,3 +131,72 @@ Tested on OpenClaw 2026.2.6-3 with MiniMax M2.5 (Fireworks) and Claude Sonnet 4.
 ## License
 
 MIT
+
+---
+
+## Metrics Dashboard
+
+The plugin includes a built-in token usage dashboard that captures `model.usage` events from all active gateways and stores them in a local SQLite database.
+
+### Enabling
+
+Add to `openclaw.json` for each gateway you want to monitor:
+
+```json5
+{
+  plugins: {
+    entries: {
+      "tool-guard": {
+        enabled: true,
+        config: {
+          metrics: {
+            enabled: true,
+            dbPath: "~/.openclaw/metrics.db",
+            dashboard: {
+              enabled: true,
+              port: 8080,
+              bind: "127.0.0.1"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+All gateways write to the **same** `~/.openclaw/metrics.db` (WAL mode supports concurrent writes). Only one gateway needs `dashboard.enabled: true` to serve the UI.
+
+### Accessing the Dashboard
+
+Navigate to **http://127.0.0.1:8080** while any gateway is running.
+
+**Tabs:**
+- **Overview** — 24h/7d/30d token burn and cost, top gateways and models
+- **Gateways** — Per-CEO breakdown with model distribution
+- **Models** — Cost efficiency comparison across providers
+- **Live** — Real-time event stream (last 50 calls)
+
+### What It Tracks
+
+| Field | Description |
+|-------|-------------|
+| Gateway ID | Which agent/CEO produced the call |
+| Provider | `fireworks`, `anthropic`, etc. |
+| Model | `kimi-k2p5`, `claude-opus-4-6`, etc. |
+| Tokens | Input, output, cache read/write, total |
+| Cost USD | Estimated cost per call |
+| Duration | API response time (ms) |
+| Channel | `discord`, `telegram`, etc. |
+
+### Data Retention
+
+Configurable via `metrics.retention`:
+
+| Table | Default |
+|-------|---------|
+| Raw events | 30 days |
+| Hourly aggregations | 90 days |
+| Daily aggregations | 1 year |
+
+Cleanup runs automatically at 4 AM UTC daily.

@@ -81,6 +81,111 @@
       ]
     },
     {
+      "moduleId": "/home/noajoliver/projects/openclaw-tool-guard/tests/dashboard-server.test.ts",
+      "tests": [
+        {
+          "name": "GET /api/overview returns valid JSON with empty database",
+          "fullName": "DashboardServer API > GET /api/overview returns valid JSON with empty database",
+          "state": "passed"
+        },
+        {
+          "name": "GET /api/timeseries returns array with empty database",
+          "fullName": "DashboardServer API > GET /api/timeseries returns array with empty database",
+          "state": "passed"
+        },
+        {
+          "name": "GET /api/gateways returns array with empty database",
+          "fullName": "DashboardServer API > GET /api/gateways returns array with empty database",
+          "state": "passed"
+        },
+        {
+          "name": "GET /api/models returns array with empty database",
+          "fullName": "DashboardServer API > GET /api/models returns array with empty database",
+          "state": "passed"
+        },
+        {
+          "name": "GET /api/gateway/:id returns object with empty database",
+          "fullName": "DashboardServer API > GET /api/gateway/:id returns object with empty database",
+          "state": "passed"
+        },
+        {
+          "name": "returns 404 JSON for unknown API routes",
+          "fullName": "DashboardServer API > returns 404 JSON for unknown API routes",
+          "state": "passed"
+        },
+        {
+          "name": "returns 404 for static files that do not exist",
+          "fullName": "DashboardServer API > returns 404 for static files that do not exist",
+          "state": "passed"
+        },
+        {
+          "name": "GET /api/overview honors hours query parameter",
+          "fullName": "DashboardServer API > GET /api/overview honors hours query parameter",
+          "state": "passed"
+        },
+        {
+          "name": "GET /api/timeseries filters by gateway query parameter",
+          "fullName": "DashboardServer API > GET /api/timeseries filters by gateway query parameter",
+          "state": "passed"
+        },
+        {
+          "name": "returns correct overview data after recording usage",
+          "fullName": "DashboardServer API > returns correct overview data after recording usage",
+          "state": "passed"
+        },
+        {
+          "name": "GET /api/gateways returns gateway data after recording usage",
+          "fullName": "DashboardServer API > GET /api/gateways returns gateway data after recording usage",
+          "state": "passed"
+        },
+        {
+          "name": "GET /api/gateway/:id returns data for specific gateway",
+          "fullName": "DashboardServer API > GET /api/gateway/:id returns data for specific gateway",
+          "state": "passed"
+        },
+        {
+          "name": "GET /api/models returns model distribution with correct shape",
+          "fullName": "DashboardServer API > GET /api/models returns model distribution with correct shape",
+          "state": "passed"
+        }
+      ]
+    },
+    {
+      "moduleId": "/home/noajoliver/projects/openclaw-tool-guard/tests/database.test.ts",
+      "tests": [
+        {
+          "name": "creates tables on init",
+          "fullName": "MetricsDatabase > creates tables on init",
+          "state": "passed"
+        },
+        {
+          "name": "records a usage event",
+          "fullName": "MetricsDatabase > records a usage event",
+          "state": "passed"
+        },
+        {
+          "name": "aggregates hourly stats correctly",
+          "fullName": "MetricsDatabase > aggregates hourly stats correctly",
+          "state": "passed"
+        },
+        {
+          "name": "aggregates daily stats correctly",
+          "fullName": "MetricsDatabase > aggregates daily stats correctly",
+          "state": "passed"
+        },
+        {
+          "name": "cleans up old raw data without error",
+          "fullName": "MetricsDatabase > cleans up old raw data without error",
+          "state": "passed"
+        },
+        {
+          "name": "returns model distribution",
+          "fullName": "MetricsDatabase > returns model distribution",
+          "state": "passed"
+        }
+      ]
+    },
+    {
       "moduleId": "/home/noajoliver/projects/openclaw-tool-guard/tests/integration.test.ts",
       "tests": [
         {
@@ -146,6 +251,26 @@
         {
           "name": "does not register hooks when enabled is false",
           "fullName": "plugin entry point > does not register hooks when enabled is false",
+          "state": "passed"
+        }
+      ]
+    },
+    {
+      "moduleId": "/home/noajoliver/projects/openclaw-tool-guard/tests/metrics-collector.test.ts",
+      "tests": [
+        {
+          "name": "flushes buffered events to database",
+          "fullName": "MetricsCollector > flushes buffered events to database",
+          "state": "passed"
+        },
+        {
+          "name": "batches multiple events in one flush",
+          "fullName": "MetricsCollector > batches multiple events in one flush",
+          "state": "passed"
+        },
+        {
+          "name": "auto-flushes when buffer size is reached",
+          "fullName": "MetricsCollector > auto-flushes when buffer size is reached",
           "state": "passed"
         }
       ]

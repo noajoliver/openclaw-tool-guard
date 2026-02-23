@@ -25,6 +25,38 @@
       "enabled": {
         "type": "boolean",
         "default": true
+      },
+      "metrics": {
+        "type": "object",
+        "description": "Token usage metrics collection and dashboard",
+        "properties": {
+          "enabled": { "type": "boolean", "default": true, "description": "Enable metrics collection" },
+          "gatewayId": { "type": "string", "description": "Override gateway identifier (defaults to agent name)" },
+          "dbPath": { "type": "string", "default": "~/.openclaw/metrics.db", "description": "SQLite database path" },
+          "dashboard": {
+            "type": "object",
+            "properties": {
+              "enabled": { "type": "boolean", "default": true },
+              "port": { "type": "number", "default": 8080 },
+              "bind": { "type": "string", "default": "127.0.0.1" }
+            }
+          },
+          "retention": {
+            "type": "object",
+            "properties": {
+              "rawDays": { "type": "number", "default": 30 },
+              "hourlyDays": { "type": "number", "default": 90 },
+              "dailyDays": { "type": "number", "default": 365 }
+            }
+          },
+          "buffer": {
+            "type": "object",
+            "properties": {
+              "flushMs": { "type": "number", "default": 5000 },
+              "flushSize": { "type": "number", "default": 100 }
+            }
+          }
+        }
       }
     }
   },
