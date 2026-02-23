@@ -101,22 +101,29 @@ export default function register(api: any) {
     let db: MetricsDatabase | null = null;
     let collector: MetricsCollector | null = null;
     let dashboard: DashboardServer | null = null;
+    let unsubscribeDiagnostic: (() => void) | null = null;
 
     api.registerService({
       id: "metrics",
-      start: () => {
+      start: async () => {
         try {
           db = new MetricsDatabase(dbPath);
           collector = new MetricsCollector(db, { gatewayId });
 
-          if (api.onDiagnosticEvent) {
-            api.onDiagnosticEvent((event: any) => {
-              if (event?.type === "model.usage" && collector) {
-                collector.record(event);
-              }
-            });
-          } else {
-            console.log("[metrics] Warning: onDiagnosticEvent not available. Token usage capture requires OpenClaw 2026.3+ or diagnostics-otel plugin enabled.");
+          // Try to import and subscribe to diagnostic events
+          try {
+            // @ts-ignore — openclaw/plugin-sdk is provided at runtime by the host
+            const sdk = await import("openclaw/plugin-sdk") as any;
+            if (sdk.onDiagnosticEvent) {
+              unsubscribeDiagnostic = sdk.onDiagnosticEvent((event: any) => {
+                if (event?.type === "model.usage" && collector) {
+                  collector.record(event);
+                }
+              });
+              console.log("[metrics] Subscribed to model.usage diagnostic events");
+            }
+          } catch (sdkErr) {
+            console.log("[metrics] Diagnostic events unavailable (SDK not loaded)");
           }
 
           const dashCfg = metricsConfig.dashboard ?? {};
@@ -137,6 +144,7 @@ export default function register(api: any) {
       stop: async () => {
         collector?.stop();
         await dashboard?.stop();
+        unsubscribeDiagnostic?.();
         db?.close();
       },
     });
